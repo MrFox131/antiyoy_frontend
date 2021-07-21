@@ -36,7 +36,7 @@ var model = {
                 console.log(point)
                 const gr = new PIXI.Graphics()
                 gr.beginFill(0xff0000)
-                gr.arc(point[2]*boardSprite.width/100+offcet_from_left, point[3]*boardSprite.height/100, 10, 0, 7)
+                gr.arc(point[2]*boardSprite.width/100+offcet_from_left, point[3]*boardSprite.height/100, 1.5/100*image_width*scale, 0, 7)
                 gr.endFill()
                 app.stage.addChild(gr)
             })
