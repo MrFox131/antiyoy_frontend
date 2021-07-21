@@ -4,7 +4,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
     module: {
         rules: [
-            {test: /\.svg$/, use: 'svg-inline-loader'},
+            {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                    },
+                ],
+            },
             {test: /\.css$/, use: ['style-loader', 'css-loader']},
             {test: /\.(js)$/, use: 'babel-loader'}
         ]
