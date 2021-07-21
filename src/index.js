@@ -11,7 +11,7 @@ scale = height/1080
 scale = Math.min(scale, width/1636)
 
 var model = {
-    createCanvas: functiopixi.js animate spriten() {
+    createCanvas: function() {
         app = new PIXI.Application()
         app.renderer.view.style.position = "absolute";
         app.renderer.view.style.display = "block";
