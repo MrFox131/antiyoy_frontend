@@ -17,5 +17,8 @@
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server"
+  },
+  "dependencies": {
+    "@babel/core": "^7.14.8"
   }
 }
