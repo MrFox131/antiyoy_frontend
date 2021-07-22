@@ -1,4 +1,4 @@
-const object = {
+module.exports = {
 	1: [
 		{
 			id: 4,

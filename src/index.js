@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import "./index.css"
 import board from "./img/Base board.png"
+import cityGraph from "./cityMap"
 
 let app;
 const width = window.innerWidth;
@@ -45,6 +46,18 @@ const model = {
                 })
                 app.stage.addChild(gr)
             })
+            Object.keys(cityGraph).map((cityIndex,index)=>{
+                cityGraph[cityIndex].forEach((value)=>{
+                    const edge = new PIXI.Graphics()
+                    edge.beginFill(0xff0000)
+                    edge.lineStyle(2, Math.ceil(Math.random()*16777215))
+                    edge.moveTo(points[cityIndex-1][2]/100*imageWidth*scale+offsetFromLeft, points[cityIndex-1][3]/100*imageHeight*scale)
+                    edge.lineTo(points[value.id-1][2]/100*imageWidth*scale+offsetFromLeft, points[value.id-1][3]/100*imageHeight*scale)
+                    edge.endFill()
+                    app.stage.addChild(edge)
+                })
+            })
+
 
         })
 
