@@ -32,13 +32,13 @@ app.loader
         // mainScene.on("pointerover", ()=>{zoomPermission = true; console.log("true");});
 
 
-        window.addEventListener("wheel", (e)=>{
-            let delta = -e.deltaY;
-            if (zoomPermission && mainBoardScene.scale.x + delta / 1000 >= 1 && mainBoardScene.scale.x + delta / 1000 <= 2.5) {
-                mainBoardScene.scale.x += delta / 1000;
-                mainBoardScene.scale.y += delta / 1000;
-            }
-        });
+        // window.addEventListener("wheel", (e)=>{
+        //     let delta = -e.deltaY;
+        //     if (zoomPermission && mainBoardScene.scale.x + delta / 1000 >= 1 && mainBoardScene.scale.x + delta / 1000 <= 2.5) {
+        //         mainBoardScene.scale.x += delta / 1000;
+        //         mainBoardScene.scale.y += delta / 1000;
+        //     }
+        // });
 
         const boardSprite = new PIXI.Sprite(resources.board.texture);
         mainBoardScene.addChild(boardSprite);
@@ -54,18 +54,28 @@ app.loader
         window.addEventListener('wheel', (e)=>{
             console.log(e)
             let delta = -e.deltaY/100;
-            if(boardSprite.scale.x+delta>=1 && boardSprite.scale.x+delta <= 2.5) {
+            if(delta > 0 && boardSprite.scale.x+delta <= 2.5) {
                 let initialScale = boardSprite.scale.x
-                let positionScale = 1/(initialScale)*(initialScale+delta)
+                let positionScale = 1+delta/initialScale
                 let xRelativeToImage = (e.clientX - mainBoardSceneOffset) / (initialScale*initialBoardScale);
-                let yRelativeToImage = e.clientY/initialScale /initialBoardScale;
+                let yRelativeToImage = e.clientY/(initialScale*initialBoardScale);
                 console.log(xRelativeToImage, yRelativeToImage)
                 boardSprite.position.x = -(positionScale*(xRelativeToImage - boardSprite.position.x) - xRelativeToImage)
-                boardSprite.position.y = -(positionScale*(yRelativeToImage-boardSprite.position.y) - yRelativeToImage)
+                boardSprite.position.y = -(positionScale*(yRelativeToImage - boardSprite.position.y) - yRelativeToImage)
                 console.log(boardSprite.position.x, boardSprite.position.y, positionScale)
                 boardSprite.scale.x += delta;
                 boardSprite.scale.y += delta;
-
+            } else if (delta < 0 && boardSprite.scale.x+delta>=1) {
+                let initialScale = boardSprite.scale.x
+                let positionScale = 1+delta/(initialScale - 1)
+                boardSprite.position.x *= positionScale
+                boardSprite.position.y *= positionScale
+                boardSprite.scale.x += delta
+                boardSprite.scale.y += delta
+                if (initialScale+delta === 1) {
+                    boardSprite.position.x = 0
+                    boardSprite.position.y = 0
+                }
             }
         })
 
