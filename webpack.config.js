@@ -25,5 +25,13 @@ module.exports = {
             template: 'src/index.html'
         })
     ],
+    devServer: {
+        historyApiFallback: true,
+        contentBase: path.resolve(__dirname, './dist/index.html'),
+        open: true,
+        compress: true,
+        hot: true,
+        port: 8080,
+    },
     mode:"development"
 }
