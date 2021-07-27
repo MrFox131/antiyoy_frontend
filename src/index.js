@@ -94,10 +94,10 @@ app.loader
             if (zoomPermission && delta > 0 && boardSprite.scale.x + delta <= 2.5) {
                 let initialScale = boardSprite.scale.x;
                 let positionScale = 1 + delta / initialScale;
-                let xRelativeToImage = (e.clientX - mainBoardSceneOffset) / (initialScale * initialBoardScale);
-                let yRelativeToImage = e.clientY / (initialScale * initialBoardScale);
-                boardSprite.position.x = -(positionScale * (xRelativeToImage - boardSprite.position.x) - xRelativeToImage);
-                boardSprite.position.y = -(positionScale * (yRelativeToImage - boardSprite.position.y) - yRelativeToImage);
+                let xRelativeToScene = (e.clientX - mainBoardSceneOffset) / (mainBoardScene.scale.x);
+                let yRelativeToScene = e.clientY / (mainBoardScene.scale.x);
+                boardSprite.position.x = -(positionScale * (xRelativeToScene - boardSprite.position.x) - xRelativeToScene);
+                boardSprite.position.y = -(positionScale * (yRelativeToScene - boardSprite.position.y) - yRelativeToScene);
                 boardSprite.scale.x += delta;
                 boardSprite.scale.y += delta;
             } else if (zoomPermission && delta < 0 && boardSprite.scale.x + delta >= 1) {
@@ -108,6 +108,7 @@ app.loader
                 boardSprite.scale.x += delta;
                 boardSprite.scale.y += delta;
                 if (initialScale + delta === 1) {
+                    console.log("scaled to 1")
                     boardSprite.position.x = 0;
                     boardSprite.position.y = 0;
                 }
