@@ -108,7 +108,6 @@ app.loader
                 boardSprite.scale.x += delta;
                 boardSprite.scale.y += delta;
                 if (initialScale + delta === 1) {
-                    console.log("scaled to 1")
                     boardSprite.position.x = 0;
                     boardSprite.position.y = 0;
                 }
