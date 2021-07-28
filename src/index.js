@@ -1,9 +1,11 @@
 import * as PIXI from 'pixi.js';
 import "./index.css";
 import cityGraph from "./cityMap";
+import background from "./img/background.jpg"
 import boardImg from "./img/board.jpg"
 import panelImg from "./img/darkWood.png"
 import sideButton from "./img/arrow.png"
+import { TSNumberKeyword } from 'babel-types';
 
 const points = [[0, 0, 6.3, 22.9], [1, 2, 3.5, 40.0], [2, 2, 11.0, 77.6], [3, 1, 16.3, 22.6], [4, 0, 18.4, 30.3], [5, 0, 15.4, 39.2], [6, 0, 20.3, 50.7], [7, 2, 26.7, 42.0], [8, 1, 34.6, 16.4], [9, 1, 42.4, 53.8], [10, 2, 44.0, 77.6], [11, 2, 39.2, 87.6], [12, 2, 58.1, 13.4], [13, 0, 55.0, 25.7], [14, 0, 53.9, 79.1], [15, 0, 67.4, 26.6], [16, 0, 70.7, 52.4], [17, 2, 68.9, 83.0], [18, 1, 91.8, 26.7], [19, 0, 84.6, 64.0], [20, 1, 88.1, 72.3], [21, 'San-Francisco', 10.1, 31.7], [22, 'Arckham', 27.2, 33.2], [23, 'Amazonia', 27.5, 58.6], [24, 'Buenos-Aires', 26.9, 74.0], [25, 'London', 44.2, 26.8], [26, 'Rome', 49.8, 38.9], [27, 'Istanbul', 60.4, 34.6], [28, 'Pyramids', 57.1, 50.4], [29, 'HeartofAfrica', 55.5, 65.6], [30, 'Antarctica', 59.0, 91.9], [31, 'Tunguska', 75.2, 26.8], [32, 'Himalayas', 73.2, 42.1], [33, 'Shanghai', 84.4, 49.5], [34, 'Tokio', 92.7, 40.9], [35, 'Sydney', 91.2, 82.3]];
 
@@ -16,6 +18,7 @@ const app = new PIXI.Application({width: window.innerWidth, height: window.inner
 document.body.appendChild(app.view);
 
 app.loader
+    .add("back", background)
     .add("board", boardImg)
     .add("panel", panelImg)
     .add("arrowButton", sideButton)
@@ -27,19 +30,15 @@ app.loader
         mainBoardScene.y = 0;
         mainBoardScene.scale.set(initialBoardScale, initialBoardScale);
         mainBoardScene.interactive = true;
-
-        //! Комментарий
-        // const graphics = new PIXI.Graphics();
-        // graphics.beginFill(0x114444);
-        // graphics.drawRect(mainBoardSceneOffset, 0, mainBoardWidth * initialBoardScale, mainBoardHeight * initialBoardScale);
-        // graphics.endFill();
-        // mainBoardScene.mask = graphics;
+        app.stage.addChild(mainBoardScene); 
 
         // Игровая карта
         const boardSprite = new PIXI.Sprite(resources.board.texture);
-        mainBoardScene.addChild(boardSprite);
         boardSprite.interactive = true;
-        app.stage.addChild(mainBoardScene);
+        let test = "up";
+        boardSprite.on("pointerdown", ()=>{test = "down"});
+        boardSprite.on("pointerup", ()=>{test = "up"})
+        mainBoardScene.addChild(boardSprite);
 
         // Левая сторона, содержащая левую панель и кнопку вызова меню
         const leftSide = new PIXI.Container();
@@ -62,7 +61,7 @@ app.loader
         leftSide.addChild(leftPanel);
 
         const leftPanelSprite = new PIXI.Sprite(resources.panel.texture);
-        leftPanelSprite.width = window.innerWidth / 5;
+        leftPanelSprite.width = window.innerWidth / 4;
         leftPanel.addChild(leftPanelSprite);
 
         const leftSideButton = new PIXI.Sprite(resources.arrowButton.texture);
@@ -72,20 +71,40 @@ app.loader
         leftSideButton.position.set(leftPanelSprite.width + leftSideButton.width / 2, leftSideButton.height / 2);
         leftSideButton.interactive = true;
         leftSideButton.buttonMode = true;
-        let openLeftPanel = false, closeLeftPanel = false;
+        let openPanel = false, closePanel = false;
         leftSideButton.on("pointerdown", ()=>{
             if (leftPanel.show) {
                 leftPanel.show = false;
-                openLeftPanel = false;
-                closeLeftPanel = true;
+                openPanel = false;
+                closePanel = true;
             }
             else {
                 leftPanel.show = true;
-                openLeftPanel = true;
-                closeLeftPanel = false;
+                openPanel = true;
+                closePanel = false;
             }
         });
         leftSide.addChild(leftSideButton);
+
+        // Правая сторона, содержащая правую панель
+        const rightSide = new PIXI.Container();
+        app.stage.addChild(rightSide);
+
+        // Правая панель и элементы на ней (Логику движения см. на левой панели и в ticker'e)
+        const rightPanel = new PIXI.Container();
+        rightPanel.interactive = true;
+        rightPanel.on('pointerover', () => {
+            zoomPermission = false;
+        });
+        rightPanel.on('pointerout', () => {
+            zoomPermission = true;
+        });
+        rightSide.addChild(rightPanel);
+
+        const rightPanelSprite = new PIXI.Sprite(resources.panel.texture);
+        rightPanelSprite.width = window.innerWidth / 4;
+        rightSide.x = window.innerWidth - rightPanelSprite.width;
+        rightPanel.addChild(rightPanelSprite);
 
         
         
@@ -134,13 +153,13 @@ app.loader
             } else if (code === "KeyQ") {
                 if (leftPanel.show) {
                     leftPanel.show = false;
-                    openLeftPanel = false;
-                    closeLeftPanel = true;
+                    openPanel = false;
+                    closePanel = true;
                 }
                 else {
                     leftPanel.show = true;
-                    openLeftPanel = true;
-                    closeLeftPanel = false;
+                    openPanel = true;
+                    closePanel = false;
                 }
             }
         });
@@ -176,25 +195,33 @@ app.loader
                 );
             }
 
-            // Закрытие левой панели
-            if (closeLeftPanel) {
-                if (leftSide.x >= -leftPanel.width) {
+            // Закрытие боковых панелей
+            if (closePanel) {
+                if (leftSide.x - leftSide.dx >= -leftPanel.width) {
                     leftSide.x -= leftSide.dx + delta;
+                    rightSide.x += leftSide.dx + delta;
                     leftSideButton.rotation = Math.PI * (leftSide.x + leftPanel.width) / leftPanel.width;
                 }
                 else {
-                    closeLeftPanel = false;
+                    closePanel = false;
+                    leftSide.x = -leftPanel.width;
+                    rightSide.x = window.innerWidth;
+                    leftSideButton.rotation = 0;
                 }
             }
             
-            // Открытие левой панели
-            if (openLeftPanel) {
+            // Открытие боковых панелей
+            if (openPanel) {
                 if (leftSide.x + leftSide.dx <= 0) {
                     leftSide.x += leftSide.dx + delta;
+                    rightSide.x -= leftSide.dx + delta;
                     leftSideButton.rotation = Math.PI * (leftSide.x + leftPanel.width) / leftPanel.width;
                 }
                 else {
-                    openLeftPanel = false;
+                    openPanel = false;
+                    leftSide.x = 0;
+                    rightSide.x = window.innerWidth - rightPanelSprite.width;
+                    leftSideButton.rotation = Math.PI;
                 }
             }
         });
