@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js';
 import "./index.css";
 import cityGraph from "./cityMap";
-import background from "./img/background.jpg"
-import boardImg from "./img/board.jpg"
-import panelImg from "./img/darkWood.png"
-import sideButton from "./img/arrow.png"
-import { TSNumberKeyword } from 'babel-types';
+import background from "./img/background.jpg";
+import boardImg from "./img/board.jpg";
+import panelImg from "./img/darkWood.png";
+import sideButton from "./img/arrow.png";
+import char from "./img/char.png";
 
 const points = [[0, 0, 6.3, 22.9], [1, 2, 3.5, 40.0], [2, 2, 11.0, 77.6], [3, 1, 16.3, 22.6], [4, 0, 18.4, 30.3], [5, 0, 15.4, 39.2], [6, 0, 20.3, 50.7], [7, 2, 26.7, 42.0], [8, 1, 34.6, 16.4], [9, 1, 42.4, 53.8], [10, 2, 44.0, 77.6], [11, 2, 39.2, 87.6], [12, 2, 58.1, 13.4], [13, 0, 55.0, 25.7], [14, 0, 53.9, 79.1], [15, 0, 67.4, 26.6], [16, 0, 70.7, 52.4], [17, 2, 68.9, 83.0], [18, 1, 91.8, 26.7], [19, 0, 84.6, 64.0], [20, 1, 88.1, 72.3], [21, 'San-Francisco', 10.1, 31.7], [22, 'Arckham', 27.2, 33.2], [23, 'Amazonia', 27.5, 58.6], [24, 'Buenos-Aires', 26.9, 74.0], [25, 'London', 44.2, 26.8], [26, 'Rome', 49.8, 38.9], [27, 'Istanbul', 60.4, 34.6], [28, 'Pyramids', 57.1, 50.4], [29, 'HeartofAfrica', 55.5, 65.6], [30, 'Antarctica', 59.0, 91.9], [31, 'Tunguska', 75.2, 26.8], [32, 'Himalayas', 73.2, 42.1], [33, 'Shanghai', 84.4, 49.5], [34, 'Tokio', 92.7, 40.9], [35, 'Sydney', 91.2, 82.3]];
 
@@ -22,6 +22,7 @@ app.loader
     .add("board", boardImg)
     .add("panel", panelImg)
     .add("arrowButton", sideButton)
+    .add("character", char)
     .load((loader, resources) => {
 
         // Сцена с игровой картой и элементами на ней
@@ -35,78 +36,111 @@ app.loader
         // Игровая карта
         const boardSprite = new PIXI.Sprite(resources.board.texture);
         boardSprite.interactive = true;
-        let test = "up";
-        boardSprite.on("pointerdown", ()=>{test = "down"});
-        boardSprite.on("pointerup", ()=>{test = "up"})
         mainBoardScene.addChild(boardSprite);
 
-        // Левая сторона, содержащая левую панель и кнопку вызова меню
+        // Ширина боковой панели без кнопки
+        const panelWidth = window.innerWidth / 3;
+
+        // Левая сторона, содержащая боковую панель и кнопку вызова меню
         const leftSide = new PIXI.Container();
         leftSide.dx = 20;
         app.stage.addChild(leftSide);
         
-        // false, если мышь наведена на боковую панель, true в ином случае
-        let zoomPermission = true;
-
-        // Левая панель и элементы на ней
-        const leftPanel = new PIXI.Container();
-        leftPanel.show = true;
-        leftPanel.interactive = true;
-        leftPanel.on('pointerover', () => {
-            zoomPermission = false;
-        });
-        leftPanel.on('pointerout', () => {
-            zoomPermission = true;
-        });
-        leftSide.addChild(leftPanel);
-
-        const leftPanelSprite = new PIXI.Sprite(resources.panel.texture);
-        leftPanelSprite.width = window.innerWidth / 4;
-        leftPanel.addChild(leftPanelSprite);
-
+        // Кнопка вызова/сворачивания меню
         const leftSideButton = new PIXI.Sprite(resources.arrowButton.texture);
         leftSideButton.scale.set(0.2);
         leftSideButton.anchor.set(0.5);
         leftSideButton.rotation = Math.PI;
-        leftSideButton.position.set(leftPanelSprite.width + leftSideButton.width / 2, leftSideButton.height / 2);
+        leftSideButton.position.set(panelWidth + leftSideButton.width / 2, leftSideButton.height / 2);
         leftSideButton.interactive = true;
         leftSideButton.buttonMode = true;
         let openPanel = false, closePanel = false;
         leftSideButton.on("pointerdown", ()=>{
-            if (leftPanel.show) {
-                leftPanel.show = false;
+            if (panel.show) {
+                panel.show = false;
                 openPanel = false;
                 closePanel = true;
             }
             else {
-                leftPanel.show = true;
+                panel.show = true;
                 openPanel = true;
                 closePanel = false;
             }
         });
         leftSide.addChild(leftSideButton);
 
-        // Правая сторона, содержащая правую панель
-        const rightSide = new PIXI.Container();
-        app.stage.addChild(rightSide);
+        // // Кнопка вызова меню персонажа
+        // const charButton = new PIXI.Graphics();
+        // charButton.beginFill(0x3366CC);
+        // charButton.drawRect(0, 0, panelWidth / 3, 100);
+        // charButton.endFill();
+        // charButton.interactive = true;
+        // charButton.buttonMode = true;
+        // // charButton.on("pointerdown", ()=>{
 
-        // Правая панель и элементы на ней (Логику движения см. на левой панели и в ticker'e)
-        const rightPanel = new PIXI.Container();
-        rightPanel.interactive = true;
-        rightPanel.on('pointerover', () => {
+        // //     charPanel.visible = true;
+        // //     alliesPanel.visible = false;
+        // //     ancientPanel.visible = false;
+        // // });
+        // leftSide.addChild(charButton);
+
+        // // Кнопка вызова меню персонажей союзников
+        // const alliesButton = new PIXI.Graphics();
+        // alliesButton.beginFill(0x009900);
+        // alliesButton.drawRect(charButton.width, 0, panelWidth / 3, 100);
+        // alliesButton.endFill();
+        // alliesButton.interactive = true;
+        // alliesButton.buttonMode = true;
+        // leftSide.addChild(alliesButton);
+
+        // // Кнопка вызова меню персонажей союзников
+        // const ancientButton = new PIXI.Graphics();
+        // ancientButton.beginFill(0x990000);
+        // ancientButton.drawRect(charButton.width * 2, 0, panelWidth / 3, 100);
+        // ancientButton.endFill();
+        // ancientButton.interactive = true;
+        // ancientButton.buttonMode = true;
+        // leftSide.addChild(ancientButton);
+
+        // // Линия ограничения видимости. (Для боковых меню)
+        // const frame = new PIXI.Graphics();
+        // ancientButton.beginFill(0x99AAAA);
+        // ancientButton.drawRect(0, charButton.height, panelWidth, window.innerHeight);
+        // ancientButton.endFill();
+        // panel.mask = frame;
+        
+        // false, если мышь наведена на боковую панель, true в ином случае
+        let zoomPermission = true;
+
+        // Левая панель и элементы на ней
+        const panel = new PIXI.Container();
+        panel.show = true;
+        panel.interactive = true;
+        panel.on('pointerover', () => {
             zoomPermission = false;
         });
-        rightPanel.on('pointerout', () => {
+        panel.on('pointerout', () => {
             zoomPermission = true;
         });
-        rightSide.addChild(rightPanel);
+        leftSide.addChild(panel);
 
-        const rightPanelSprite = new PIXI.Sprite(resources.panel.texture);
-        rightPanelSprite.width = window.innerWidth / 4;
-        rightSide.x = window.innerWidth - rightPanelSprite.width;
-        rightPanel.addChild(rightPanelSprite);
+        const charPanel = new PIXI.Container();
+        charPanel.lastY = -1000; //! y при коротом достигается низ панели при прокрутке
+        panel.addChild(charPanel);
 
-        
+        const panelSprite = new PIXI.Sprite(resources.panel.texture);
+        // panelSprite.y = charButton.height;
+        panelSprite.width = panelWidth;
+        charPanel.addChild(panelSprite);
+
+        const panelElemOffset = 20;
+
+        const charSprite = new PIXI.Sprite(resources.character.texture);
+        charSprite.ratio = charSprite.width / charSprite.height;
+        charSprite.width = panel.width - panelElemOffset;
+        charSprite.height = charSprite.width / charSprite.ratio;
+        charSprite.position.set(panelElemOffset / 2, panelElemOffset);
+        charPanel.addChild(charSprite);
         
         window.addEventListener('wheel', (e) => {
             let delta = -e.deltaY / 100;
@@ -132,7 +166,26 @@ app.loader
                 }
             }
         });
-        window.addEventListener('wheel', (e) => { console.log("123")});
+
+        let activePanel = charPanel;
+        window.addEventListener('wheel', (e) => {
+            let delta = -e.deltaY;
+            console.log(delta);
+            if (!zoomPermission) {
+                if (delta > 0) {
+                    if (activePanel.y + delta <= 0)
+                        activePanel.y += delta;
+                    else
+                        activePanel.y = 0;
+                }
+                else if (delta < 0) {
+                    if (activePanel.y + delta >= activePanel.lastY)
+                        activePanel.y += delta;
+                    else    
+                        activePanel.y = activePanel.lastY;
+                }
+            }
+        });
 
         const keyboardState = {
             LEFT: false,
@@ -151,13 +204,13 @@ app.loader
             } else if (code === "KeyA" || code === "ArrowLeft") {
                 keyboardState.LEFT = true;
             } else if (code === "KeyQ") {
-                if (leftPanel.show) {
-                    leftPanel.show = false;
+                if (panel.show) {
+                    panel.show = false;
                     openPanel = false;
                     closePanel = true;
                 }
                 else {
-                    leftPanel.show = true;
+                    panel.show = true;
                     openPanel = true;
                     closePanel = false;
                 }
@@ -195,32 +248,28 @@ app.loader
                 );
             }
 
-            // Закрытие боковых панелей
+            // Закрытие боковой панели
             if (closePanel) {
-                if (leftSide.x - leftSide.dx >= -leftPanel.width) {
+                if (leftSide.x - leftSide.dx >= -panel.width) {
                     leftSide.x -= leftSide.dx + delta;
-                    rightSide.x += leftSide.dx + delta;
-                    leftSideButton.rotation = Math.PI * (leftSide.x + leftPanel.width) / leftPanel.width;
+                    leftSideButton.rotation = Math.PI * (leftSide.x + panel.width) / panel.width;
                 }
                 else {
                     closePanel = false;
-                    leftSide.x = -leftPanel.width;
-                    rightSide.x = window.innerWidth;
+                    leftSide.x = -panel.width;
                     leftSideButton.rotation = 0;
                 }
             }
             
-            // Открытие боковых панелей
+            // Открытие боковой панели
             if (openPanel) {
                 if (leftSide.x + leftSide.dx <= 0) {
                     leftSide.x += leftSide.dx + delta;
-                    rightSide.x -= leftSide.dx + delta;
-                    leftSideButton.rotation = Math.PI * (leftSide.x + leftPanel.width) / leftPanel.width;
+                    leftSideButton.rotation = Math.PI * (leftSide.x + panel.width) / panel.width;
                 }
                 else {
                     openPanel = false;
                     leftSide.x = 0;
-                    rightSide.x = window.innerWidth - rightPanelSprite.width;
                     leftSideButton.rotation = Math.PI;
                 }
             }
