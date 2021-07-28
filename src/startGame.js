@@ -3,8 +3,9 @@ let body = document.getElementById("body");
 let containerStartGame = document.createElement('div');
 containerStartGame.style.width = '100%';
 containerStartGame.style.height = '100%';
-containerStartGame.style.background = 'red';
 containerStartGame.style.flex = 'auto';
+containerStartGame.style.justifyContent = 'center';
+containerStartGame.style.alignItems = 'center';
 body.appendChild(containerStartGame);
 
 let gameId = Date.now();
@@ -21,6 +22,7 @@ buttonNewRoom.textContent = "Создать новую комнату";
 buttonConnect.textContent = "Присоединиться";
 
 buttonContainer.appendChild(textUserId);
+buttonContainer.appendChild(textForRoom);
 buttonContainer.appendChild(input);
 buttonContainer.appendChild(document.createElement('br'));
 buttonContainer.appendChild(buttonNewRoom);
@@ -30,6 +32,3 @@ containerStartGame.appendChild(buttonContainer);
 
 buttonNewRoom.addEventListener("click", function() { /* ??? */ containerStartGame.remove(); console.log(1)})
 buttonConnect.addEventListener("click", function() { gameId = input.value; /* ??? */ containerStartGame.remove(); console.log(gameId)})
-
-
-
