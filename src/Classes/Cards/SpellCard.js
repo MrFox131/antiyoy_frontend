@@ -1,21 +1,11 @@
-class Card {
-    constructor(id, type, spriteFront, spriteBack) {
-        this.id = id;
-        this.type = type;
-        this.spriteFront = spriteFront;
-        this.spriteBack = spriteBack;
-    }
-    
-    use(id) {
-        
-    }
-}
+import {Card} from "./Card"
 
-
-class SpellCard extends Card {
+export class SpellCard extends Card {
     use(id, Player) {
         switch (id) {
             case 1: {
+
+                
                 console.log("card" + id + "used")
                 break;
             }

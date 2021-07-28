@@ -1,36 +1,24 @@
 class Player {
-    constructor(
-        nickname,
-        nickname,
-        spriteFront,
-        spriteBack,
-        defHp,
-        defMind,
-        defEvidence,
-        defKnowledges,
-        defComunications,
-        defVision,
-        defStrenght,
-        defVolition,
-        defActives = [],
-        defSpells = [],
-        ) {
-        this.nickname = nickname;
-        this.spriteFront = spriteFront;
-        this.spriteBack = spriteBack;
-        this.hp = this.maxHp = defHp;
-        this.mind = this.maxMind = defMind;
-        this.numberOfEvidence = defEvidence;
+    constructor() {
+        this.spriteFront = null;
+        this.spriteBack = null;
+        this.hp = this.maxHp = 0;
+        this.mind = this.maxMind = 0;
+        this.numberOfEvidence = 0;
         this.numberOfTickets = {train: 0, sheep: 0};
         this.stats = {
-            knowleges: defKnowledges,
-            comuncations: defComunications,
-            vision: defVision,
-            strenght: defStrenght,
-            volition: defVolition
+            knowleges: 0,
+            comuncations: 0,
+            vision: 0,
+            strenght: 0,
+            volition: 0
         }
-        this.actives = defActives;
-        this.spells = defSpells;
+        this.actives = null;
+        this.spells = null;
+    }
+
+    takePerson() {
+        
     }
 
     lossHP() {
@@ -42,17 +30,5 @@ class Player {
     }
 
 
-    useCard(card) {
-        if (card.type == "actives") {
-
-
-            return true;
-        } else if (card.type == "spells") {
-
-
-            return true;
-        } else {
-            return false;
-        }
-    }
+    
 }
