@@ -163,18 +163,20 @@ app.loader
 
         // получение доступа к атласу текстур
         const icons = new PIXI.Spritesheet(resources[iconsAtlasImg].texture, iconsAtlas);
+        let asdawda;
         icons.parse((...args) => {
-            console.log("args", args);
+            asdawda = args;
         });
         
-        const icon = icons.data.frames;
-        console.log(icon["health.png"]);
-
-        const healthSprite = new PIXI.Sprite(icon["health.png"]);
+        // const icon = icons.data.frames;
+        // console.log(icon["health.png"]);
+       
+        const healthSprite = new PIXI.Sprite(asdawda[0]["health.png"]);
         healthSprite.width = 500;
         healthSprite.height = 500;
         healthSprite.position.set(300, 399);
         app.stage.addChild(healthSprite);
+        
         
         window.addEventListener('wheel', (e) => {
             let delta = -e.deltaY / 100;
