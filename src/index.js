@@ -87,11 +87,14 @@ app.loader
         leftSide.addChild(panel);
 
         // Стили для текста в кнопках
-        let buttonStyle = new PIXI.TextStyle({
+        const buttonStyle = new PIXI.TextStyle({
             fontFamily: "Arial",
+            fontSize: 50,
             fill: "white",
             stroke: '#000000',
-            strokeThickness: 4
+            strokeThickness: 4,
+            dropShadow: true,
+            dropShadowColor: "#000000"
         });
 
         // Кнопка вызова меню персонажа
@@ -161,23 +164,88 @@ app.loader
         charSprite.position.set(panelElemOffset / 2, charButton.height + panelElemOffset);
         charPanel.addChild(charSprite);
 
+        // Cтили для счетчиков здоровья и рассудка
+        const healthCountStyle = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 200,
+            fill: "white",
+            stroke: '#000000',
+            strokeThickness: 10,
+            dropShadow: true,
+            dropShadowColor: "#000000"
+        });
+
         // получение доступа к атласу текстур
         const icons = new PIXI.Spritesheet(resources[iconsAtlasImg].texture, iconsAtlas);
-        let asdawda;
-        icons.parse((...args) => {
-            asdawda = args;
+        let icon;
+        icons.parse((...args) => { icon = args[0]; });
+
+        // Контейнер для хранения здоровья, рассудака, билетов, улик
+        const statContainer = new PIXI.Container();
+        statContainer.position.set(panelElemOffset / 2, charSprite.y + charSprite.height + panelElemOffset);
+
+        // Спрайт здоровья
+        const healthSprite = new PIXI.Sprite(icon["health.png"]);
+        statContainer.addChild(healthSprite);
+        const healthText = new PIXI.Text(5, healthCountStyle);
+        healthText.position.set(healthSprite.width / 2 - healthText.width / 2, healthSprite.height / 2 - healthText.height / 2);
+        healthSprite.addChild(healthText);
+
+        // Спрайт рассудка
+        const mindSprite = new PIXI.Sprite(icon["mind.png"]);
+        mindSprite.x = healthSprite.width + 20;
+        statContainer.addChild(mindSprite);
+        const mindText = new PIXI.Text(3, healthCountStyle);
+        mindText.position.set(mindSprite.width / 2 - mindText.width / 2, mindSprite.height / 2 - mindText.height / 2);
+        mindSprite.addChild(mindText);
+
+        // Стили для счетчиков билетов и улик
+        const ticketCountStyle = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 120,
+            fill: "white",
+            stroke: '#000000',
+            strokeThickness: 10,
+            dropShadow: true,
+            dropShadowColor: "#000000"
         });
+
+        // Контейнер для билетов и улик
+        const ticketBlock = new PIXI.Container();
+        ticketBlock.position.set(mindSprite.x + mindSprite.width + 30, -5);
+        ticketBlock.scale.set(0.6);
+        statContainer.addChild(ticketBlock);
+
+        // Спрайт билета на поезд
+        const trainSprite = new PIXI.Sprite(icon["train.png"]);
+        ticketBlock.addChild(trainSprite);
+        const trainText = new PIXI.Text("x1", ticketCountStyle);
+        trainText.position.set(trainSprite.width + 20, 0);
+        trainSprite.addChild(trainText);
+
+        // Спрайт билета на корабль
+        const shipSprite = new PIXI.Sprite(icon["ship.png"]);
+        shipSprite.position.set(trainSprite.x, trainSprite.height + 30);
+        ticketBlock.addChild(shipSprite);
+        const shipText = new PIXI.Text("x1", ticketCountStyle);
+        shipText.position.set(trainText.x, 0);
+        shipSprite.addChild(shipText);
+
+        // Спрайт улики
+        const evidTickSprite = new PIXI.Sprite(icon["evidence.png"]);
+        evidTickSprite.position.set(trainSprite.x + 35, (trainSprite.height + 30) * 2);
+        evidTickSprite.scale.set(0.5);
+        ticketBlock.addChild(evidTickSprite);
+        const evidTickText = new PIXI.Text("x3", ticketCountStyle);
+        evidTickText.position.set(trainText.x, evidTickSprite.y);
+        ticketBlock.addChild(evidTickText);
         
-        // const icon = icons.data.frames;
-        // console.log(icon["health.png"]);
-       
-        const healthSprite = new PIXI.Sprite(asdawda[0]["health.png"]);
-        healthSprite.width = 500;
-        healthSprite.height = 500;
-        healthSprite.position.set(300, 399);
-        app.stage.addChild(healthSprite);
+        statContainer.ratio = statContainer.width / statContainer.height;
+        statContainer.width = panelSprite.width - panelElemOffset;
+        statContainer.height = statContainer.width / statContainer.ratio;
+        charPanel.addChild(statContainer);
         
-        
+        // Эвент для масштабирования на карте
         window.addEventListener('wheel', (e) => {
             let delta = -e.deltaY / 100;
             if (zoomPermission && delta > 0 && boardSprite.scale.x + delta <= 2.5) {
@@ -203,6 +271,7 @@ app.loader
             }
         });
 
+        // Эвент для скролла на боковой панели
         let activePanel = charPanel;
         window.addEventListener('wheel', (e) => {
             let delta = -e.deltaY;
@@ -222,13 +291,13 @@ app.loader
             }
         });
 
+        // Константы и эвенты для перемещения по карте
         const keyboardState = {
             LEFT: false,
             RIGHT: false,
             DOWN: false,
             UP: false
         };
-
         window.addEventListener('keydown', ({code}) => {
             if (code === "KeyW" || code === "ArrowUp") {
                 keyboardState.UP = true;
@@ -251,7 +320,6 @@ app.loader
                 }
             }
         });
-
         document.addEventListener('keyup', ({code}) => {
             if (code === "KeyW" || code === "ArrowUp") {
                 keyboardState.UP = false;
@@ -264,6 +332,7 @@ app.loader
             }
         });
 
+        // Бесконечный цикл с частотой обновления 60 раз в секунду. delta содержит величину остановки между кадрами.
         app.ticker.add((delta) => {
             // Движение по карте
             if (keyboardState.UP || keyboardState.DOWN || keyboardState.LEFT || keyboardState.RIGHT) {
