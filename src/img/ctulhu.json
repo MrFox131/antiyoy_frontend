@@ -1,0 +1,60 @@
+{"frames": {
+
+"1.png":
+{
+	"frame": {"x":0,"y":0,"w":692,"h":452},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":692,"h":452},
+	"sourceSize": {"w":692,"h":452}
+},
+"2.png":
+{
+	"frame": {"x":692,"y":0,"w":692,"h":452},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":692,"h":452},
+	"sourceSize": {"w":692,"h":452}
+},
+"3.png":
+{
+	"frame": {"x":0,"y":452,"w":692,"h":452},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":692,"h":452},
+	"sourceSize": {"w":692,"h":452}
+},
+"4.png":
+{
+	"frame": {"x":692,"y":452,"w":692,"h":452},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":692,"h":452},
+	"sourceSize": {"w":692,"h":452}
+},
+"ctulhuBack.png":
+{
+	"frame": {"x":0,"y":904,"w":1179,"h":1534},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1179,"h":1534},
+	"sourceSize": {"w":1179,"h":1534}
+},
+"ctulhuFront.png":
+{
+	"frame": {"x":0,"y":2438,"w":1180,"h":1534},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1180,"h":1534},
+	"sourceSize": {"w":1180,"h":1534}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "ctulhu.png",
+	"format": "RGBA8888",
+	"size": {"w":1384,"h":3972},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:26424a9195eb35d67b4f323ea12215e2:1a74cc5480f8501c34952ea9930c626b:a916f61c933fb77ac998da1eed7c7351$"
+}
+}

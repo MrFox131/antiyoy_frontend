@@ -6,6 +6,8 @@ import panelImg from "./img/darkWood.png";
 import arrowButton from "./img/arrow.png";
 import iconsAtlas from "./img/icon.json";
 import iconsAtlasImg from "./img/icon.png";
+import ancientAtlas from "./img/ctulhu.json";
+import ancientAtlasImg from "./img/ctulhu.png";
 import characterList from "./img/char.png";
 
 const points = [[0, 0, 6.3, 22.9], [1, 2, 3.5, 40.0], [2, 2, 11.0, 77.6], [3, 1, 16.3, 22.6], [4, 0, 18.4, 30.3], [5, 0, 15.4, 39.2], [6, 0, 20.3, 50.7], [7, 2, 26.7, 42.0], [8, 1, 34.6, 16.4], [9, 1, 42.4, 53.8], [10, 2, 44.0, 77.6], [11, 2, 39.2, 87.6], [12, 2, 58.1, 13.4], [13, 0, 55.0, 25.7], [14, 0, 53.9, 79.1], [15, 0, 67.4, 26.6], [16, 0, 70.7, 52.4], [17, 2, 68.9, 83.0], [18, 1, 91.8, 26.7], [19, 0, 84.6, 64.0], [20, 1, 88.1, 72.3], [21, 'San-Francisco', 10.1, 31.7], [22, 'Arckham', 27.2, 33.2], [23, 'Amazonia', 27.5, 58.6], [24, 'Buenos-Aires', 26.9, 74.0], [25, 'London', 44.2, 26.8], [26, 'Rome', 49.8, 38.9], [27, 'Istanbul', 60.4, 34.6], [28, 'Pyramids', 57.1, 50.4], [29, 'HeartofAfrica', 55.5, 65.6], [30, 'Antarctica', 59.0, 91.9], [31, 'Tunguska', 75.2, 26.8], [32, 'Himalayas', 73.2, 42.1], [33, 'Shanghai', 84.4, 49.5], [34, 'Tokio', 92.7, 40.9], [35, 'Sydney', 91.2, 82.3]];
@@ -22,8 +24,8 @@ app.loader
     .add(boardImg)
     .add(panelImg)
     .add(arrowButton)
-    // .add(iconsAtlas) если включить, то ничего не работает
     .add(iconsAtlasImg)
+    .add(ancientAtlasImg)
     .add(characterList)
     .load((loader, resources) => {
 
@@ -40,6 +42,7 @@ app.loader
         boardSprite.interactive = true;
         mainBoardScene.addChild(boardSprite);
 
+//----------------------------ЛОГИКА ВЫДВИЖНОЙ ПАНЕЛИ----------------------------
         // Ширина боковой панели без кнопки
         const panelWidth = window.innerWidth / 3;
 
@@ -70,7 +73,8 @@ app.loader
             }
         });
         leftSide.addChild(leftSideButton);
-        
+
+//--------------------------------ПАНЕЛЬ С КНОПКАМИ--------------------------------
         // false, если мышь наведена на боковую панель, true в ином случае
         let zoomPermission = true;
 
@@ -104,12 +108,12 @@ app.loader
         charButton.endFill();
         charButton.interactive = true;
         charButton.buttonMode = true;
-        // charButton.on("pointerdown", ()=>{
-
-        //     charPanel.visible = true;
-        //     alliesPanel.visible = false;
-        //     ancientPanel.visible = false;
-        // });
+        charButton.on("pointerdown", ()=>{
+            activePanel = charPanel;
+            charPanel.visible = true;
+            // alliesPanel.visible = false;
+            ancientPanel.visible = false;
+        });
         const textOffset = 20;
         const charText = new PIXI.Text("Персонаж", buttonStyle);
         charText.width = charButton.width - textOffset * 2;
@@ -125,6 +129,12 @@ app.loader
         alliesButton.endFill();
         alliesButton.interactive = true;
         alliesButton.buttonMode = true;
+        alliesButton.on("pointerdown", ()=>{
+            // activePanel = alliesPanel;
+            charPanel.visible = false;
+            // alliesPanel.visible = true;
+            ancientPanel.visible = false;
+        });
         const alliesText = new PIXI.Text("Сыщики", buttonStyle);
         alliesText.width = charButton.width - textOffset * 2;
         alliesText.height = charButton.height - textOffset * 2;
@@ -139,6 +149,12 @@ app.loader
         ancientButton.endFill();
         ancientButton.interactive = true;
         ancientButton.buttonMode = true;
+        ancientButton.on("pointerdown", ()=>{
+            activePanel = ancientPanel;
+            charPanel.visible = false;
+            // alliesPanel.visible = false;
+            ancientPanel.visible = true;
+        });
         const ancientText = new PIXI.Text("Древний", buttonStyle);
         ancientText.width = charButton.width - textOffset * 2;
         ancientText.height = charButton.height - textOffset * 2;
@@ -146,16 +162,20 @@ app.loader
         ancientButton.addChild(ancientText);
         panel.addChild(ancientButton);
 
-        const charPanel = new PIXI.Container();
-        charPanel.lastY = -1000; //! y при коротом достигается низ панели при прокрутке
-        panel.addChild(charPanel);
-
+        // Спрайт дерева на фоне
         const panelSprite = new PIXI.Sprite(resources[panelImg].texture);
         panelSprite.y = charButton.height;
         panelSprite.width = panelWidth;
-        charPanel.addChild(panelSprite);
+        panel.addChild(panelSprite);
 
+        // Отступ элементов сбоку и друг между другом
         const panelElemOffset = 20;
+
+//--------------------------------ВКЛАДКА ПЕРСОНАЖА--------------------------------
+        const charPanel = new PIXI.Container();
+        charPanel.visible = false;
+        charPanel.lastY = -1000; //! y при коротом достигается низ панели при прокрутке
+        panel.addChild(charPanel);
 
         const charSprite = new PIXI.Sprite(resources[characterList].texture);
         charSprite.ratio = charSprite.width / charSprite.height;
@@ -244,7 +264,60 @@ app.loader
         statContainer.width = panelSprite.width - panelElemOffset;
         statContainer.height = statContainer.width / statContainer.ratio;
         charPanel.addChild(statContainer);
-        
+
+//--------------------------------ВКЛАДКА ДРЕВНЕГО--------------------------------
+        // Получение доступа к атласу
+        const ancientCards = new PIXI.Spritesheet(resources[ancientAtlasImg].texture, ancientAtlas);
+        let ancient;
+        ancientCards.parse((...args) => { ancient = args[0]; });
+
+        // Панель с информацией о древнем
+        const ancientPanel = new PIXI.Container();
+        ancientPanel.lastY = -1000; //! y при коротом достигается низ панели при прокрутке
+        panel.addChild(ancientPanel);
+
+        // Спрайт листа древнего
+        const ancientSprite = new PIXI.Sprite(ancient["ctulhuFront.png"]);
+        ancientSprite.ratio = ancientSprite.width / ancientSprite.height;
+        ancientSprite.width = panel.width - panelElemOffset;
+        ancientSprite.height = ancientSprite.width / ancientSprite.ratio;
+        ancientSprite.position.set(panelElemOffset / 2, charButton.height + panelElemOffset);
+        ancientPanel.addChild(ancientSprite);
+
+        // Контейнер для активной тайны и счетчика тайн
+        const secretContainer = new PIXI.Container();
+        secretContainer.position.set(panelElemOffset / 2, ancientSprite.y + ancientSprite.height + panelElemOffset);
+
+        // Стили для текста секретов
+        const secretStyle = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 70,
+            fill: "white",
+            stroke: '#000000',
+            strokeThickness: 10,
+            dropShadow: true,
+            dropShadowColor: "#000000"
+        });
+
+        // Счётчик тайн
+        const secretText = new PIXI.Text("Тайн разгадано:", secretStyle);
+        secretText.x += 50;
+        secretContainer.addChild(secretText);
+        const secretCount = new PIXI.Text("3", secretStyle);
+        secretCount.x = secretText.x + secretText.width + 20;
+        secretContainer.addChild(secretCount);
+
+        // Спрайт активной тайны
+        const secretSprite = new PIXI.Sprite(ancient["2.png"]);
+        secretSprite.y += 100;
+        secretContainer.addChild(secretSprite);
+
+        secretContainer.ratio = secretContainer.width / secretContainer.height;
+        secretContainer.width = panel.width - panelElemOffset;
+        secretContainer.height = secretContainer.width / secretContainer.ratio;
+        ancientPanel.addChild(secretContainer);
+
+//------------------------------------ЭВЕНТЫ------------------------------------       
         // Эвент для масштабирования на карте
         window.addEventListener('wheel', (e) => {
             let delta = -e.deltaY / 100;
@@ -331,7 +404,7 @@ app.loader
                 keyboardState.LEFT = false;
             }
         });
-
+//-----------------------------------ГЛАВНЫЙ ЦИКЛ-----------------------------------
         // Бесконечный цикл с частотой обновления 60 раз в секунду. delta содержит величину остановки между кадрами.
         app.ticker.add((delta) => {
             // Движение по карте
